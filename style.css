@@ -1,0 +1,823 @@
+/*===============GERAL===============*/
+
+* {
+  margin: 0; /* o margin e o padding 0 tiram as margens e os preenchimentos padrão do navegador*/
+  padding: 0;
+  box-sizing: border-box;
+  /*box-sizing: border-box; indica que o tamanho das caixas (td no html é caixa) agora levará em conta até a borda -- ou seja, o width será a soma do conteúdo com a borda e o padding.*/
+}
+
+:root {
+  font-size: 62.5%; /* 1rem = 10px*/
+
+  --hue: 110;
+
+  --primary-color: hsl(var(--hue), 100%, 26%);
+  --headline: hsl(210, 11%, 15%);
+  --paragraph: hsl(210, 9%, 31%);
+
+  --brand-beige: hsl(39, 100%, 97%);
+  --brand-light: hsl(calc(var(--hue) - 22), 23%, 89%);
+
+  --bg-light: hsl(180, 14%, 97%);
+
+  --brand-dark: hsl(var(--hue), 100%, 14%);
+
+  --nav-height: 7.2rem;
+}
+
+html {
+  scroll-behavior: smooth; /* deixar a ida para alguma id scrolar de forma suave em vez de pular de uma vez*/
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'DM Sans';
+  font-size: 1.6rem;
+
+  text-align: center;
+
+  overflow: overlay; /* tirar diferença do scroll para entrar no menu expanded e não deslocar a logo*/
+  background: var(--bg-light);
+}
+
+.wrapper {
+  width: min(50rem, 100%);
+  margin-inline: auto;
+  padding-inline: 2.4rem; /* deixar o preenchimento lateral 'inline'(left/right) de 2.4rem*/
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%; /* usado para as imagens do site sempre respeitarem a largura definida*/
+}
+
+section {
+  padding-block: 10rem;
+}
+
+section header h1 {
+  font-size: 3.4rem;
+  color: var(--headline);
+  line-height: 130%;
+
+  margin-bottom: 2.4rem;
+}
+
+section header h2 {
+  font-size: 3rem;
+  line-height: 3.9rem;
+  color: var(--headline);
+
+  margin-top: 1.6rem;
+}
+
+section header h4 {
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  line-height: 150%;
+  margin-bottom: 1.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+}
+
+section .content p {
+  color: var(--paragraph);
+  line-height: 150%;
+  font-weight: 400;
+  font-size: 1.6rem;
+}
+
+.button {
+  background: var(--primary-color);
+
+  border-radius: 4rem;
+
+  margin-bottom: 6rem;
+
+  padding: 1.6rem 3.2rem;
+  width: fit-content; /* tirou a width e a height para colocar apenas o fit content, p casos de o botão precisar expandir*/
+
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+
+  text-decoration: none;
+
+  transition: background 200ms;
+}
+
+.button:hover {
+  background: var(--brand-dark);
+  /* hover é a passagem do mouse em cima do botão*/
+}
+/*===============CUSTOM-COLORS===============*/
+#backToTopButton svg circle,
+nav .logo svg path[fill*='#00856F'] {
+  fill: var(--primary-color);
+}
+/* o [fill*="#00856F"] é usado pra fazer a mudança de cor apenas nas configurações de cor que a contém*/
+#contact .content svg path,
+button .open-menu path {
+  stroke: var(--primary-color);
+}
+
+#services .card svg circle {
+  fill: var(--brand-light);
+}
+
+body.menu-expanded #navigation .logo path,
+#navigation.scroll .logo path {
+  fill: white;
+}
+
+/*===================NAVIGATION==========================================*/
+nav {
+  display: flex;
+
+  height: var(--nav-height);
+
+  position: fixed; /* deixar o menu do DoctorCare e o botão de menu fixo na pagina quando acontecer a rolagem*/
+  top: 0; /* distancia do top do menu*/
+  width: 100vw; /* largura do menu ficar 100% da largura de visualização*/
+
+  z-index: 100;
+}
+
+nav .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav.scroll {
+  background: var(--primary-color);
+  width: 100vw;
+}
+
+nav.scroll .logo path {
+  fill: white;
+}
+
+nav.scroll .open-menu path {
+  stroke: white;
+}
+
+nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+nav .button:hover {
+  background-color: var(--primary-color);
+  color: white;
+
+  filter: brightness(1.1);
+}
+
+nav .menu,
+nav .close-menu {
+  position: fixed;
+}
+/*===================MENU-EXPANDED========================*/
+body.menu-expanded {
+  overflow: hidden;
+}
+
+body.menu-expanded > :not(nav) {
+  /*  o > indica sumir com o primeiro nivel das tags, e o :not(nav) indica que sumirá com todos exceto a tag nav  */
+  visibility: hidden;
+  /*foi trocado de display none para visibility hidden por causa dos ajustes de JS que estavam dando problema na hora da aparição do menu*/
+}
+
+.menu,
+.close-menu,
+body.menu-expanded .open-menu {
+  opacity: 0;
+  visibility: hidden;
+}
+
+body.menu-expanded .menu,
+body.menu-expanded .close-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu {
+  transform: translateY(100%); /* arrastar o menu para*/
+}
+
+body.menu-expanded .menu {
+  top: 0;
+  left: 0;
+  background: var(--primary-color);
+
+  width: 100vw;
+  height: 100vh;
+
+  padding-top: var(--nav-height);
+
+  transition: transform 500ms; /* transição para abrir o menu em um modelo de arrasto*/
+  transform: translateY(
+    0
+  ); /* levar o menu para fora da página p o .menu com o translateY em 100% puxar para sima*/
+}
+
+.menu ul:nth-child(1) {
+  /* nth child 1..2..3 é p selecionar a primeira, segunda ... tag filha que está sendo editada*/
+
+  display: flex;
+  flex-direction: column;
+  gap: 4.8rem;
+
+  margin-top: 6rem;
+
+  font-weight: 700;
+  font-size: 2.4rem;
+  line-height: 3.1rem;
+}
+
+.menu ul li a {
+  color: var(--brand-beige);
+  text-decoration: none;
+}
+
+.menu .button {
+  display: inline-block;
+  padding: 1.6rem 3.2rem;
+
+  margin-top: 4.8rem;
+  margin-bottom: 8rem;
+
+  text-decoration: none; /* tirar sublinhado do botão/link */
+
+  background: white;
+  border-radius: 4rem;
+
+  font-weight: 700;
+  font-size: 1.8rem;
+  line-height: 2.3rem;
+  text-transform: uppercase;
+
+  color: var(--primary-color);
+}
+
+.social-links {
+  display: flex;
+  gap: 3.2rem;
+  align-items: center;
+  justify-content: center;
+}
+
+body.menu-expanded button {
+  position: relative;
+  z-index: 100;
+}
+
+body.menu-expanded .logo {
+  position: relative;
+  z-index: 100;
+}
+
+body.menu-expanded .logo path {
+  fill: white;
+}
+
+body.menu-expanded button path {
+  stroke: white;
+}
+
+/*===================#HOME===============================================================*/
+
+/* antigo header que foi trocado para a id home pois foi adicionado mais um header*/
+
+#home {
+  padding-block: 0;
+  padding-top: calc(
+    4.1rem + var(--nav-height)
+  ); /* foi usada a margem top original do header e depois de transformar a height do nav em variavel foi somada à altura para tirar a sobreposição da caixa fixa do menu, que está na tag nav */
+}
+
+#home::before {
+  /* essa caixa foi usada pra fazer a cor de fundo do inicio da página*/
+  content: '';
+  width: 100%;
+  height: calc(75% + var(--nav-height));
+  /* aqui a altura foi alterada da inicial por causa da adição do menu de navegação no topo*/
+  background-color: var(--brand-light);
+  display: block;
+  /* foi usado o display block para poder usar a width e a height, que o display inline não permite*/
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  /* foi usada a position absolute pra deixar a caixa absoluta na pagina, tirando a margem top e left e colocando ela por trás no z index para colorir o fundo*/
+}
+
+#home .button {
+  margin-inline: auto;
+}
+
+#home img {
+  width: 26.4rem;
+  display: block;
+  margin-inline: auto;
+  object-position: 0 2rem;
+}
+
+#home p {
+  font-size: 1.8rem;
+  color: var(--paragraph);
+
+  margin-bottom: 3.2rem;
+}
+
+#home .stats {
+  width: 100%;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  margin-inline: auto;
+
+  background: var(--brand-beige);
+  border: 0.1rem var(--brand-light);
+  border-radius: 0.6rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6rem;
+}
+
+#home .stat p {
+  margin: 0;
+  color: var(--primary-color);
+  line-height: 150%;
+  font-size: 1.6rem;
+}
+
+#home .stat h3 {
+  font-size: 4.8rem;
+  color: var(--headline);
+  line-height: 130%;
+  margin-bottom: 0.4rem;
+}
+
+/*===================SERVICES==========================================*/
+
+#services header h2 {
+  margin-bottom: 6rem;
+}
+
+#services .cards {
+  display: flex;
+  flex-direction: column;
+  gap: 3.2rem; /* o gap é usado para dar espaços entre as caixas, o*/
+}
+
+#services .card {
+  padding: 2.4rem;
+  text-align: left;
+
+  background: white;
+
+  border: 0.1rem solid var(--brand-light);
+  border-radius: 0.6rem;
+}
+
+#services .card h3 {
+  margin-block: 1.6rem;
+}
+
+/*===================ABOUT==========================================*/
+#about {
+  background: var(--brand-beige);
+}
+
+#about header h4 {
+  text-align: left;
+}
+
+#about header h2 {
+  margin-bottom: 2.4rem;
+  text-align: left;
+}
+
+#about .content p {
+  text-align: left;
+  margin-bottom: 6rem;
+}
+
+#about .content img {
+  border-radius: 2rem;
+}
+
+/*===================CONTACT==========================================*/
+
+#contact {
+  text-align: left;
+  padding-block: 10rem;
+}
+
+#contact header h2 {
+  color: var(--headline);
+
+  margin-bottom: 3.2rem;
+}
+
+#contact ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+
+  margin-bottom: 3.2rem;
+}
+
+#contact ul li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 150%;
+
+  color: var(--paragraph);
+}
+
+/*===================FOOTER==========================================*/
+footer {
+  background: var(--primary-color);
+  text-align: left;
+
+  padding-block: 6rem;
+}
+
+footer .logo {
+  display: inline-block;
+  /* usa-se o display inline block pq o natural que é o disp inline n aceita margin top e bottom, width/height*/
+  margin-bottom: 2.4rem;
+}
+
+footer .logo svg {
+  width: 23.6rem;
+  height: 3.1rem;
+}
+
+footer .logo path {
+  fill: white;
+}
+
+footer .copyright {
+  color: var(--brand-beige);
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 2.1rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
+  margin-bottom: 3.2rem;
+}
+
+footer .social-links {
+  justify-content: flex-start;
+  /* colocar o conteudo no canto de start da width*/
+}
+
+/*BACK TO TOP*/
+#backToTopButton {
+  color: var(--primary-color);
+  position: fixed;
+  /* position fixed é para subir camadas no site, sobrepondo as outras "caixas"*/
+  bottom: 2rem;
+  right: 2.5rem;
+  /* jogar o botão para o fundo e lado direito da visualização*/
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(100%);
+  /* colocar ele 100% do eixo Y, ou seja, não aparece*/
+  transition: 200ms;
+  /* transição do botão aparecendo*/
+}
+
+#backToTopButton.show {
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateY(0);
+  /* volta ele para o 0 da posição, ou seja, aparecendo na tela*/
+}
+
+/*======RESPONSIVE======*/
+
+@media (min-width: 1024px) {
+  /*======GERAL======*/
+  body{
+    overflow: auto;
+  }
+  /*tirar a sobreposição da barra de scroll que tinha sido feita no mobile*/
+  .wrapper {
+    width: min(112rem, 100%);
+    display: grid;
+  }
+  /* display grid usado para desbloquear as configurações de "tabela" usadas no layout*/
+
+  .col-a {
+    text-align: left;
+    grid-area: A;
+  }
+
+  .col-b {
+    grid-area: B;
+  }
+
+  section{
+    padding-block: 16rem;
+  }
+
+  section header h2{
+    font-size: 4rem;
+    line-height: 5.2rem;
+  }
+  /*======NAVIGATION======*/
+
+  /* RESET */
+  nav#navigation .wrapper * {
+    margin: 0;
+    padding: 0;
+    visibility: initial;
+    display: initial;
+    opacity: initial;
+    flex-direction: initial;
+    position: initial;
+    font-size: initial;
+    font-weight: initial;
+    transform: initial;
+    color: initial;
+    background-color: initial;
+    filter: initial;
+  }
+  /* foi zerado as configurações de posicionamento, cor, visibilidade e display pra fazer a versão de desktop*/
+
+  nav#navigation .open-menu,
+  nav#navigation .close-menu,
+  nav#navigation .social-links {
+    display: none;
+  }
+  /* foi retirado a aparição do menu e links pois não tem no desktop*/
+
+  nav#navigation .menu {
+    display: flex;
+    align-items: center;
+    width: 60%;
+    justify-content: space-between;
+  }
+  /* essa parte do menu é apenas a parte de inicio serviços sobre e o botão e foi mudada a width para distanciar as caixas internas*/
+
+  nav#navigation .menu ul:nth-child(1) {
+    display: flex;
+    gap: 3.2rem;
+  }
+  /* foi usada a nth child para não pegar a lista dos social links, senão ele ia aparecer*/
+
+  nav#navigation .menu ul li a {
+    color: var(--primary-color);
+    opacity: 0.7;
+  }
+
+  nav#navigation .menu a.button {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.8rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 1rem 2.4rem;
+    gap: 1.6rem;
+
+    border: 1px solid var(--primary-color);
+    border-radius: 4rem;
+  }
+
+  nav#navigation.scroll .menu ul li a {
+    color: var(--brand-light);
+    opacity: 0.6;
+  }
+
+  nav#navigation.scroll .menu a.button {
+    color: white;
+    border-color: white;
+  }
+
+  nav#navigation .menu li a {
+    transition: opacity 400ms;
+  }
+  /*efeito de transição quando passar o mouse em cima*/
+
+
+  nav#navigation.scroll .menu li a.active,
+  nav#navigation .menu li a:hover,
+  nav#navigation.scroll .menu li a:hover {
+    opacity: 1;
+    font-weight: 700;
+  }
+  /* configurações hover e função active que será usada no JS para deixar o texto destacado quando a rolagem estiver nas devidas sessões */
+
+  nav#navigation.scroll .menu a.button:hover {
+    color: var(--primary-color);
+    background-color: var(--brand-light);
+  }
+
+  nav#navigation .menu a.button.active,
+  nav#navigation .menu a.button:hover {
+    filter: brightness(1.3);
+    color: white;
+    background-color: var(--primary-color);
+  }
+
+  nav#navigation .menu li a::after {
+    content: '';
+    width: 0%;
+    height: 2px;
+    background-color: var(--primary-color);
+
+    position: relative;
+    bottom: -2rem;
+    left: -0.5rem;
+
+    display: block;
+
+    transition: width 200ms;
+  }
+  /* essa caixa com o conteudo vazio foi usada para fazer o sublinhado no hover
+  a width aqui está zero pra acontecer a aparição de 100% e a transição de width de 200ms apenas na passada do mouse*/
+
+  nav#navigation.scroll .menu li a::after {
+    background-color: white;
+  }
+
+  nav#navigation .menu li a.active::after,
+  nav#navigation .menu li a:hover::after {
+    padding-inline: 0.8rem;
+    width: 100%;
+  }
+
+  /*======HOME======*/
+  #home::before{
+    height: calc(95% - var(--nav-height));
+  }
+  /* configurar tamanho da altura da caixa do background*/
+  #home{
+    padding-top: var(--nav-height);
+  }
+
+  #home .wrapper {
+    grid-template-columns: 60.5rem 1fr;
+    grid-template-areas:
+      'A B'
+      'C C';
+  }
+  /* funções desbloqueadas pelo display grid, sendo o columns usado para medir os espaços de ocupação das colunas e o areas para organizar a posição das caixas*/
+
+  #home .col-a {
+    align-self: center;
+  }
+  /* align self usado pra centralizar o conteudo da coluna a*/
+
+  #home h4 {
+    font-size: 1.4rem;
+    line-height: 150%;
+  }
+
+  #home h1 {
+    font-size: 5.2rem;
+    line-height: 130%;
+    margin-bottom: 2.4rem;
+  }
+
+  #home .content p {
+    font-size: 1.8rem;
+  }
+
+  #home .stats {
+    padding: 6rem;
+    grid-area: C;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  #home .stats .stat + .stat {
+    border-left: 1px solid var(--primary-color);
+  }
+  /* essa função + é usada pra ordenar que apenas o stat que tem um stat antes vai aplicar essa borda lateral esquerda*/
+
+  #home .stats .stat {
+    flex: 1;
+  }
+  /* preencher as caixas por igual em tamanho*/
+
+  #home .button {
+    margin: 0;
+  }
+
+  #home img {
+    width: 42rem;
+    height: 54.7rem;
+  }
+
+   /*======SERVICES======*/
+  #services h2{
+    width: 49.7rem;
+    margin-inline: auto;
+  }
+  /*o margin inline auto é usado pra centralizar a caixa*/
+
+  #services .cards{
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4rem;
+  }
+  /* aqui foi usado a direction row para colocar os cards em linha e o wrap pra usar todo o conteudo da caixa*/
+
+  #services .card{
+    width: 30%;
+    flex-grow: 1;
+  }
+  /* a width de 30 é pra largura dos cards ficarem ao lado um do outro formando a tabela e o grow para ficar responsivo ao tamanho*/
+
+  /*======ABOUT======*/
+  #about .wrapper {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'B A';
+    gap: 6.7rem;
+  }
+
+  #about .col-a {
+    align-self:  center;
+    text-align: left;
+    grid-area: A;
+  }
+
+  #about .col-b{
+    margin-bottom: 0;
+  }
+   /*======CONTACT======*/
+   #contact .wrapper {
+    grid-template-columns: 1fr 57.5rem;
+    grid-template-areas: 'A B';
+    gap: 14rem;
+   }
+
+   #contact h2{
+    width: 40.4rem;
+   }
+
+   /*======FOOTER======*/
+   footer{
+     padding-block: 8rem;
+   }
+
+   footer .wrapper {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'A B';
+   }
+
+   footer p{
+     margin-bottom: 0;
+   }
+
+   footer .col-a{
+    align-self: center;
+   }
+
+   footer .col-b{
+    align-self: center;
+    justify-self: end;
+   }
+/* justfy self end foi usado pra jogar a caixa para o final da margin*/
+   
+
+
+}
